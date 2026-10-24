@@ -2,19 +2,19 @@ spring:
   application:
     name: ticklk
 
+  config:
+    import: optional:file:.env[.properties],optional:file:../.env[.properties]
+
   datasource:
-    url: jdbc:postgresql://localhost:5432/ticklk
-    username: ticklk_user
-    password: ticklk_pass
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB:ticklk}
+    username: ${POSTGRES_USER:ticklk_user}
+    password: ${POSTGRES_PASSWORD}
 
   jpa:
     hibernate:
       ddl-auto: validate
+    open-in-view: false
     show-sql: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
 
   flyway:
     enabled: true
@@ -47,14 +47,13 @@ spring:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
 
-  # Java 21 Virtual Threads (Project Loom) — one line, significant throughput boost
   threads:
     virtual:
       enabled: true
 
 jwt:
   secret: ${JWT_SECRET}
-  expiration: 86400000       # 24 hours in ms
+  expiration: 86400000
 
 stripe:
   secret-key: ${STRIPE_SECRET_KEY}
@@ -65,10 +64,16 @@ springdoc:
     path: /swagger-ui.html
 
 server:
-  port: 8080
+  port: 8081
 
 management:
   endpoints:
     web:
       exposure:
         include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+  health:
+    mail:
+      enabled: false
